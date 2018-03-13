@@ -1,2 +1,8 @@
+# IDE and System
+.idea/
+*.iml
+*.DS_Store
+
+# Scala
 *.class
 *.log
