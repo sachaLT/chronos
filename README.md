@@ -8,6 +8,7 @@ This project is a exercice for using scala swing
 create a window with one calendar conponent with this look :
 
 JJ MMMMMMMM   HH:mm:SS
+
   YYYY
 
 # steps 2
