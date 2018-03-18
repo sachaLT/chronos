@@ -1,5 +1,7 @@
 package slu.appli.chronos.ui
 
+import javax.swing.ImageIcon
+
 import slu.appli.chronos.time.{Chronometer, Elapse, TimePartLabels}
 import slu.appli.chronos.timer.{IntervalTimerItem, SwingTimer, TimerItem}
 
@@ -7,10 +9,13 @@ import scala.swing._
 
 object Chronos extends SimpleSwingApplication {
   val timer = SwingTimer(100)
+  private val chronometer = Chronometer()
 
   def top: MainFrame = new MainFrame {
     title = whatTimeIsIt()
+    iconImage_=(new ImageIcon(getClass.getClassLoader.getResource("images/clock.png")).getImage)
     val timeLabel = new Label(showTime)
+    timeLabel.font_=(timeLabel.font.deriveFont(timeLabel.font.getSize2D * 5F))
     val calandarPanel = new CalendarPanel
 
     timer.start(
@@ -19,9 +24,9 @@ object Chronos extends SimpleSwingApplication {
       IntervalTimerItem(TimerItem.intervalForMinute, () => { calandarPanel.whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false)
     )
     contents = new BorderLayoutPanel()
-      .addNorth( timeLabel )
-      .addSouth( Button("Stop") { timer.stop } )
-      .addCenter( calandarPanel )
+      .addCenter( timeLabel )
+      .addSouth( new CommandPanel(chronometer) )
+      .addNorth( calandarPanel )
       .addEast(new Label("East"))
       .addWest(new Label("West"))
 
@@ -31,9 +36,6 @@ object Chronos extends SimpleSwingApplication {
   override def shutdown(): Unit = {
     timer.stop
   }
-
-  private val chronometer = Chronometer()
-  chronometer.start
 
   private def showTime: String = Elapse.prettyPrint(chronometer.elapseTime)
 
