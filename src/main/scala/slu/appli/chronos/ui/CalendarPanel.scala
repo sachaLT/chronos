@@ -6,7 +6,7 @@ import slu.appli.chronos.time.TimePartLabels
 
 import scala.swing._
 
-class CalandarPanel extends GridBagPanel {
+class CalendarPanel extends GridBagPanel {
   val txtDayLabel = newTextField(3)
 
   val txtDayNumber = newTextField(2)

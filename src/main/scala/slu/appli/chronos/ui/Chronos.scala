@@ -11,7 +11,7 @@ object Chronos extends SimpleSwingApplication {
   def top: MainFrame = new MainFrame {
     title = whatTimeIsIt()
     val timeLabel = new Label(showTime)
-    val calandarPanel = new CalandarPanel
+    val calandarPanel = new CalendarPanel
 
     timer.start(
       IntervalTimerItem(100, () => { timeLabel.text_=(showTime) }),
