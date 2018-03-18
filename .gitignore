@@ -6,3 +6,5 @@
 # Scala
 *.class
 *.log
+target/
+project/
