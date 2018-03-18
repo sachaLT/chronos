@@ -60,7 +60,8 @@ class SystemChronometer() extends Chronometer[Long] {
     pauseElapse = 0L
   }
 
-  override def elapseTime: Long = if (isStopped) elapse else {
+  override def elapseTime: Long =
+    if (isStopped || isPaused) elapse else {
     elapse + System.currentTimeMillis - startedTime
   }
 
