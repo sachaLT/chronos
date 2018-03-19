@@ -6,7 +6,7 @@ import slu.appli.chronos.time.TimePartLabels
 
 import scala.swing._
 
-class CalendarPanel extends GridBagPanel {
+class CalendarPanel extends DecoratedGridBagPanel {
   val txtDayLabel = newTextField(3)
 
   val txtDayNumber = newTextField(2)
@@ -18,26 +18,6 @@ class CalendarPanel extends GridBagPanel {
   val txtHour = newTextField(5)
 
   setFont(txtDayLabel.font.deriveFont(txtDayLabel.font.getSize2D * 2), txtHour, txtDayNumber)
-
-  private def constraints(x: Int, y: Int,
-    gridwidth: Int = 1, gridheight: Int = 1,
-    weightx: Double = 0.0, weighty: Double = 0.0,
-    fill: GridBagPanel.Fill.Value = GridBagPanel.Fill.None)
-  : Constraints = {
-    val c = new Constraints
-    c.gridx = x
-    c.gridy = y
-    c.gridwidth = gridwidth
-    c.gridheight = gridheight
-    c.weightx = weightx
-    c.weighty = weighty
-    c.fill = fill
-    c
-  }
-
-  private def setFont(font: Font, components: Component*) = {
-    components.foreach(_.font_=(font))
-  }
 
   private def newTextField(cols: Int): TextField = {
     val tf = new TextField { columns = cols }
