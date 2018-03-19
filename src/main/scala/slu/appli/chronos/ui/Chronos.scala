@@ -14,17 +14,17 @@ object Chronos extends SimpleSwingApplication {
   def top: MainFrame = new MainFrame {
     title = whatTimeIsIt()
     iconImage_=(new ImageIcon(getClass.getClassLoader.getResource("images/clock.png")).getImage)
-    val timeLabel = new Label(showTime)
-    timeLabel.font_=(timeLabel.font.deriveFont(timeLabel.font.getSize2D * 5F))
+
+    val chronoPanel: ChronoPanel = new ChronoPanel(chronometer)
     val calandarPanel = new CalendarPanel
 
     timer.start(
-      IntervalTimerItem(100, () => { timeLabel.text_=(showTime) }),
+      IntervalTimerItem(100, () => { chronoPanel.whatElapseIsIt() }),
       IntervalTimerItem(TimerItem.intervalForMinute, () => { title = whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false),
       IntervalTimerItem(TimerItem.intervalForMinute, () => { calandarPanel.whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false)
     )
     contents = new BorderLayoutPanel()
-      .addCenter( timeLabel )
+      .addCenter( chronoPanel )
       .addSouth( new CommandPanel(chronometer) )
       .addNorth( calandarPanel )
       .addEast(new Label("East"))

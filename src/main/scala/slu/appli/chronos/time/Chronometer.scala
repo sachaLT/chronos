@@ -40,7 +40,7 @@ class SystemChronometer() extends Chronometer[Long] {
 
   override def stop: Unit =  if (isStarted) {
     val stopValue = System.currentTimeMillis
-    elapse = elapse + stopValue - startedTime
+    elapse = if (isPaused) elapse else elapse + stopValue - startedTime
     startedTime = 0L
     pauseStartedTime = 0L
   }
