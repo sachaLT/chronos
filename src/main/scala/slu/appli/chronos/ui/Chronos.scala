@@ -1,8 +1,5 @@
 package slu.appli.chronos.ui
 
-import java.awt.Dimension
-import javax.swing.ImageIcon
-
 import slu.appli.chronos.time.{Chronometer, Elapse, TimePartLabels, Timer}
 import slu.appli.chronos.timer.{IntervalTimerItem, SwingTimer, TimerItem}
 
@@ -16,11 +13,14 @@ object Chronos extends SimpleSwingApplication {
   def top: MainFrame = new MainFrame {
     val me = this
     title = whatTimeIsIt()
-    iconImage_=(new ImageIcon(getClass.getClassLoader.getResource("images/clock.png")).getImage)
+    iconImage_=(MyImagesIcons.apps.getImage)
 
-    val chronoPanel: ChronoPanel = new ChronoPanel(chronometer)
     val calendarPanel = new CalendarPanel
+    calendarPanel.name = "calendar"
+    val chronoPanel: ChronoPanel = new ChronoPanel(chronometer)
+    chronoPanel.name = "chrono"
     val timerPanel: TimerPanel = new TimerPanel(timer)
+    timerPanel.name = "timer"
 
     swingTimer.start(
       IntervalTimerItem(100, () => { chronoPanel.whatElapseIsIt() }),
@@ -29,16 +29,12 @@ object Chronos extends SimpleSwingApplication {
       IntervalTimerItem(TimerItem.intervalForMinute, () => {calendarPanel.whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false)
     )
 
-    val switchPanel = new SwitchPanel(calendarPanel, chronoPanel, timerPanel)
+    val switchPanel = new SwitchPanel(chronoPanel, timerPanel)
+    switchPanel.name = "switch"
 
-    val northPanel = new FlowPanel {
-      contents += Button("next") {
-        switchPanel.switchNext()
-      }
-      contents += Button("previous") {
-        switchPanel.switchPrevious()
-      }
-    }
+    val northPanel = new BorderLayoutPanel()
+    .addWest(calendarPanel)
+    .addEast(new SelectorPanel(switchPanel))
 
     contents = new BorderLayoutPanel()
       .addCenter(switchPanel )

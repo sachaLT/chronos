@@ -2,6 +2,7 @@ package slu.appli.chronos.ui
 
 import java.awt.Dimension
 
+import scala.swing.event.Event
 import scala.swing.{BoxPanel, Component, Orientation}
 
 class SwitchPanel(mainComponent: Component, others: Component*) extends BoxPanel(Orientation.Vertical) {
@@ -12,6 +13,7 @@ class SwitchPanel(mainComponent: Component, others: Component*) extends BoxPanel
 
   mainComponent.visible_=(true)
   others.foreach(_.visible_=(false))
+  select(mainComponent.name)
 
   private def biggerDimension(dim1: Dimension, dim2: Dimension): Dimension = {
     val dim = new Dimension()
@@ -20,37 +22,62 @@ class SwitchPanel(mainComponent: Component, others: Component*) extends BoxPanel
     dim
   }
 
-  def switchNext(): (Option[Component], Component) = {
-    val (mayBePrevious, next) = others.foldLeft[(Option[Component], Component)]((others.lastOption, mainComponent)) {
+  def switchNext(): Unit = {
+    val (mayBePrevious, selected) = others.foldLeft[(Option[Component], Component)]((others.lastOption, mainComponent)) {
       case (result @ (Some(previous), _), _) if previous.visible =>
         result
       case ((_, previous), current) =>
         (Some(previous), current)
     }
-    mayBePrevious.foreach(_.visible_=(false))
-    next.visible_=(true)
-    (mayBePrevious, next)
+
+    selected.visible_=(true)
+    publish(SwitchPanel.SelectionChanged(
+      mayBePrevious.map { comp =>
+        comp.visible_=(false)
+        comp.name
+      },
+      Some(selected.name)
+    ))
   }
 
-  def switchPrevious(): (Option[Component], Component) = {
-    val (next, mayBePrevious) = others.foldRight[(Component, Option[Component])]((mainComponent, others.headOption)) {
+  def switchPrevious(): Unit = {
+    val (selected, mayBePrevious) = others.foldRight[(Component, Option[Component])]((mainComponent, others.headOption)) {
       case (_, result @ (_, Some(previous))) if previous.visible =>
         result
       case (current, (previous, _)) =>
         (current, Some(previous))
     }
-    mayBePrevious.foreach(_.visible_=(false))
-    next.visible_=(true)
-    (mayBePrevious, next)
+
+    selected.visible_=(true)
+    publish(SwitchPanel.SelectionChanged(
+      mayBePrevious.map { comp =>
+        comp.visible_=(false)
+        comp.name
+      },
+      Some(selected.name)
+    ))
   }
 
 
-  def select(component: Component): Unit = {
+  def select(name: String): Unit = {
+    var previous: Option[String] = None
+    var selected: Option[String] = None
     (mainComponent +: others)
       .collect {
-        case comp if comp == component => comp.visible_=(true)
-        case comp if comp.visible => comp.visible_=(false)
+        case comp if comp.name == name =>
+          comp.visible_=(true)
+          selected = Some(comp.name)
+        case comp if comp.visible =>
+          comp.visible_=(false)
+          previous = Some(comp.name)
       }
+    publish(SwitchPanel.SelectionChanged(previous, selected))
   }
 
+  def componentNames: Seq[String] = contents.map(_.name)
+
+}
+
+object SwitchPanel {
+  case class SelectionChanged(previous: Option[String]=None, selected: Option[String]) extends Event
 }
