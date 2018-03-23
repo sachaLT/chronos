@@ -12,6 +12,7 @@ trait Chronometer[T] {
   def isPaused: Boolean
   def isStopped: Boolean
   def isNull: Boolean
+  def onStateChanged(listener: () => Unit): Unit
 }
 
 object Chronometer {
@@ -25,17 +26,20 @@ class SystemChronometer() extends Chronometer[Long] {
   private var elapse: Long = 0L
   private var pauseStartedTime: Long = 0L
   private var pauseElapse: Long = 0L
+  private var pushStateChanged: () => Unit = () => Unit
 
   override def start: Unit = if (isStopped) {
     startedTime = System.currentTimeMillis()
     elapse = 0L
     pauseStartedTime = 0L
     pauseElapse = 0L
+    pushStateChanged()
   }
 
   override def pause: Unit = if (isStarted) {
     pauseStartedTime = System.currentTimeMillis
     elapse = elapse + pauseStartedTime - startedTime
+    pushStateChanged()
   }
 
   override def stop: Unit =  if (isStarted) {
@@ -43,12 +47,14 @@ class SystemChronometer() extends Chronometer[Long] {
     elapse = if (isPaused) elapse else elapse + stopValue - startedTime
     startedTime = 0L
     pauseStartedTime = 0L
+    pushStateChanged()
   }
 
   override def restart: Unit = if (isPaused) {
     startedTime = System.currentTimeMillis()
     pauseElapse = pauseElapse + startedTime - pauseStartedTime
     pauseStartedTime = 0L
+    pushStateChanged()
   } else if (isStopped) {
     start
   }
@@ -58,6 +64,7 @@ class SystemChronometer() extends Chronometer[Long] {
     pauseStartedTime = 0L
     elapse = 0L
     pauseElapse = 0L
+    pushStateChanged()
   }
 
   override def elapseTime: Long =
@@ -80,4 +87,13 @@ class SystemChronometer() extends Chronometer[Long] {
   override def isStopped: Boolean = startedTime == 0L
 
   override def isNull: Boolean = startedTime == 0L && elapse == 0L
+
+  override def onStateChanged(listener: () => Unit): Unit = {
+    val oldPush = pushStateChanged
+    pushStateChanged = () => {
+      oldPush()
+      listener()
+    }
+  }
+
 }

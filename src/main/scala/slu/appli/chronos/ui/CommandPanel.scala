@@ -10,25 +10,21 @@ class CommandPanel[T](chronometer: Chronometer[T]) extends FlowPanel {
 
   val btnStart = Button("start") {
     chronometer.restart
-    state
   }
   btnStart.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_start.png")))
 
   val btnStop = Button("stop") {
     chronometer.stop
-    state
   }
   btnStop.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_stop.png")))
 
   val btnPause = Button("pause") {
     chronometer.pause
-    state
   }
   btnPause.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_pause.png")))
 
   val btnReset = Button("reset") {
     chronometer.reset
-    state
   }
   btnReset.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_reset.png")))
 
@@ -36,6 +32,10 @@ class CommandPanel[T](chronometer: Chronometer[T]) extends FlowPanel {
   contents += btnPause
   contents += btnStop
   contents += btnReset
+
+  chronometer.onStateChanged { () =>
+    state
+  }
 
   state
 
