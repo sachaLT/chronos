@@ -24,7 +24,6 @@ class SystemTimer() extends Timer[Long] {
   private var elapse: Long = 0L
   private var pauseStartedTime: Long = 0L
   private var pauseElapse: Long = 0L
-  private var pushStateChanged: () => Unit = () => Unit
 
   private var stopValue: Long = 0L
   private var endValue: Long = 0L
@@ -102,14 +101,6 @@ class SystemTimer() extends Timer[Long] {
       stop
     }
     ended
-  }
-
-  override def onStateChanged(listener: () => Unit): Unit = {
-    val oldPush = pushStateChanged
-    pushStateChanged = () => {
-      oldPush()
-      listener()
-    }
   }
 
   private def setElapse(value: Long): Long = {

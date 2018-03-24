@@ -1,6 +1,8 @@
 package slu.appli.chronos.time
 
-trait Chronometer[T] {
+import slu.appli.chronos.utils.StatePublisher
+
+trait Chronometer[T] extends StatePublisher{
   def start: Unit
   def pause: Unit
   def stop: Unit
@@ -12,7 +14,6 @@ trait Chronometer[T] {
   def isPaused: Boolean
   def isStopped: Boolean
   def isNull: Boolean
-  def onStateChanged(listener: () => Unit): Unit
 }
 
 object Chronometer {
@@ -26,7 +27,6 @@ class SystemChronometer() extends Chronometer[Long] {
   private var elapse: Long = 0L
   private var pauseStartedTime: Long = 0L
   private var pauseElapse: Long = 0L
-  private var pushStateChanged: () => Unit = () => Unit
 
   override def start: Unit = if (isStopped) {
     startedTime = System.currentTimeMillis()
@@ -87,13 +87,5 @@ class SystemChronometer() extends Chronometer[Long] {
   override def isStopped: Boolean = startedTime == 0L
 
   override def isNull: Boolean = startedTime == 0L && elapse == 0L
-
-  override def onStateChanged(listener: () => Unit): Unit = {
-    val oldPush = pushStateChanged
-    pushStateChanged = () => {
-      oldPush()
-      listener()
-    }
-  }
 
 }
