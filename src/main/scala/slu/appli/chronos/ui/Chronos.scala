@@ -19,7 +19,7 @@ object Chronos extends SimpleSwingApplication {
     calendarPanel.name = "calendar"
     val chronoPanel: ChronoPanel = new ChronoPanel(chronometer)
     chronoPanel.name = "chrono"
-    val timerPanel: TimerPanel = new TimerPanel(timer)
+    val timerPanel: TimerTextPanel = new TimerTextPanel(timer)
     timerPanel.name = "timer"
 
     swingTimer.start(

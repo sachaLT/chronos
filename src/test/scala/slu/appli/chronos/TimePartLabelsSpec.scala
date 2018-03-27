@@ -3,11 +3,11 @@ package slu.appli.chronos
 import java.time.LocalDateTime
 
 import scala.util.Success
-
 import org.scalatest.{FlatSpec, Matchers}
+import slu.appli.chronos.time.TimePartLabels
 
 
-class TimePartLabelsSpec  extends FlatSpec with Matchers {
+class TimePartLabelsSpec extends FlatSpec with Matchers {
   val date: LocalDateTime = LocalDateTime.parse("2017-12-25T10:15:30")
 
   date.toString should "be parsed" in {

@@ -112,7 +112,6 @@ class SystemTimer() extends Timer[Long] {
     val now = System.currentTimeMillis
     val value = elapse + now - startedTime
     startedTime = now
-    elapse = if (value >= endValue) endValue else value
-    elapse
+    setElapse(value)
   }
 }
