@@ -1,40 +1,53 @@
 package slu.appli.chronos.ui
 
-import javax.swing.ImageIcon
-
-import slu.appli.chronos.time.{Chronometer, Elapse, TimePartLabels}
+import slu.appli.chronos.time.{Chronometer, Elapse, TimePartLabels, Timer}
 import slu.appli.chronos.timer.{IntervalTimerItem, SwingTimer, TimerItem}
 
 import scala.swing._
 
 object Chronos extends SimpleSwingApplication {
-  val timer = SwingTimer(100)
+  val swingTimer = SwingTimer(100)
   private val chronometer = Chronometer()
+  private val timer = Timer(0,0,20)
 
   def top: MainFrame = new MainFrame {
+    val me = this
     title = whatTimeIsIt()
-    iconImage_=(new ImageIcon(getClass.getClassLoader.getResource("images/clock.png")).getImage)
+    iconImage_=(MyImagesIcons.apps.getImage)
 
+    val calendarPanel = new CalendarPanel
+    calendarPanel.name = "calendar"
     val chronoPanel: ChronoPanel = new ChronoPanel(chronometer)
-    val calandarPanel = new CalendarPanel
+    chronoPanel.name = "chrono"
+    val timerPanel: TimerLabelPanel = new TimerLabelPanel(timer)
+    timerPanel.name = "timer"
 
-    timer.start(
+    swingTimer.start(
       IntervalTimerItem(100, () => { chronoPanel.whatElapseIsIt() }),
+      IntervalTimerItem(100, () => { timerPanel.whatElapseIsIt() }),
       IntervalTimerItem(TimerItem.intervalForMinute, () => { title = whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false),
-      IntervalTimerItem(TimerItem.intervalForMinute, () => { calandarPanel.whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false)
+      IntervalTimerItem(TimerItem.intervalForMinute, () => {calendarPanel.whatTimeIsIt() }, TimerItem.firstInstanceForMinute, waitFirstInstance = false)
     )
+
+    val switchPanel = new SwitchPanel(chronoPanel, timerPanel)
+    switchPanel.name = "switch"
+
+    val northPanel = new BorderLayoutPanel()
+    .addWest(calendarPanel)
+    .addEast(new SelectorPanel(switchPanel))
+
     contents = new BorderLayoutPanel()
-      .addCenter( chronoPanel )
-      .addSouth( new CommandPanel(chronometer) )
-      .addNorth( calandarPanel )
-      .addEast(new Label("East"))
-      .addWest(new Label("West"))
+      .addCenter(switchPanel )
+      .addSouth( new Label("South") )
+      .addNorth( northPanel  )
+      .addEast( new Label("East") )
+      .addWest(new Label("West") )
 
     override def closeOperation() { quit }
   }
 
   override def shutdown(): Unit = {
-    timer.stop
+    swingTimer.stop
   }
 
   private def showTime: String = Elapse.prettyPrint(chronometer.elapseTime)

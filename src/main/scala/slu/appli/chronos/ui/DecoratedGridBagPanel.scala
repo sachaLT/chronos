@@ -7,7 +7,9 @@ class DecoratedGridBagPanel extends GridBagPanel {
   protected def constraints(x: Int, y: Int,
     gridwidth: Int = 1, gridheight: Int = 1,
     weightx: Double = 0.0, weighty: Double = 0.0,
-    fill: GridBagPanel.Fill.Value = GridBagPanel.Fill.None)
+    fill: GridBagPanel.Fill.Value = GridBagPanel.Fill.None,
+    anchor: GridBagPanel.Anchor.Value = GridBagPanel.Anchor.Center
+  )
   : Constraints = {
     val c = new Constraints
     c.gridx = x
@@ -17,6 +19,7 @@ class DecoratedGridBagPanel extends GridBagPanel {
     c.weightx = weightx
     c.weighty = weighty
     c.fill = fill
+    c.anchor = anchor
     c
   }
 

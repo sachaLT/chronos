@@ -1,7 +1,5 @@
 package slu.appli.chronos.ui
 
-import javax.swing.ImageIcon
-
 import slu.appli.chronos.time.Chronometer
 
 import scala.swing.{Button, FlowPanel}
@@ -10,32 +8,32 @@ class CommandPanel[T](chronometer: Chronometer[T]) extends FlowPanel {
 
   val btnStart = Button("start") {
     chronometer.restart
-    state
   }
-  btnStart.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_start.png")))
+  btnStart.icon_=(MyImagesIcons.chronoStart)
 
   val btnStop = Button("stop") {
     chronometer.stop
-    state
   }
-  btnStop.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_stop.png")))
+  btnStop.icon_=(MyImagesIcons.chronoStop)
 
   val btnPause = Button("pause") {
     chronometer.pause
-    state
   }
-  btnPause.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_pause.png")))
+  btnPause.icon_=(MyImagesIcons.chronoPause)
 
   val btnReset = Button("reset") {
     chronometer.reset
-    state
   }
-  btnReset.icon_=(new ImageIcon(getClass.getClassLoader.getResource("images/chrono_reset.png")))
+  btnReset.icon_=(MyImagesIcons.chronoReset)
 
   contents += btnStart
   contents += btnPause
   contents += btnStop
   contents += btnReset
+
+  chronometer.onStateChanged { () =>
+    state
+  }
 
   state
 

@@ -1,6 +1,8 @@
 package slu.appli.chronos.time
 
-trait Chronometer[T] {
+import slu.appli.chronos.utils.StatePublisher
+
+trait Chronometer[T] extends StatePublisher{
   def start: Unit
   def pause: Unit
   def stop: Unit
@@ -31,11 +33,13 @@ class SystemChronometer() extends Chronometer[Long] {
     elapse = 0L
     pauseStartedTime = 0L
     pauseElapse = 0L
+    pushStateChanged()
   }
 
   override def pause: Unit = if (isStarted) {
     pauseStartedTime = System.currentTimeMillis
     elapse = elapse + pauseStartedTime - startedTime
+    pushStateChanged()
   }
 
   override def stop: Unit =  if (isStarted) {
@@ -43,12 +47,14 @@ class SystemChronometer() extends Chronometer[Long] {
     elapse = if (isPaused) elapse else elapse + stopValue - startedTime
     startedTime = 0L
     pauseStartedTime = 0L
+    pushStateChanged()
   }
 
   override def restart: Unit = if (isPaused) {
     startedTime = System.currentTimeMillis()
     pauseElapse = pauseElapse + startedTime - pauseStartedTime
     pauseStartedTime = 0L
+    pushStateChanged()
   } else if (isStopped) {
     start
   }
@@ -58,6 +64,7 @@ class SystemChronometer() extends Chronometer[Long] {
     pauseStartedTime = 0L
     elapse = 0L
     pauseElapse = 0L
+    pushStateChanged()
   }
 
   override def elapseTime: Long =
@@ -80,4 +87,5 @@ class SystemChronometer() extends Chronometer[Long] {
   override def isStopped: Boolean = startedTime == 0L
 
   override def isNull: Boolean = startedTime == 0L && elapse == 0L
+
 }
